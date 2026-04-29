@@ -1,0 +1,36 @@
+name: Extract projeto.zip
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "projeto.zip"
+      - ".github/workflows/extrair.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
+
+      - name: Extrair projeto.zip
+        run: |
+          rm -rf projeto
+          mkdir projeto
+          unzip -o projeto.zip -d projeto
+
+      - name: Salvar arquivos extraídos no GitHub
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add projeto
+          git commit -m "Extrair projeto.zip" || echo "Nada para salvar"
+          git push
