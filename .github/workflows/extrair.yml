@@ -18,19 +18,34 @@ jobs:
       - name: Baixar repositório
         uses: actions/checkout@v4
 
-      - name: Instalar unzip
-        run: sudo apt-get update && sudo apt-get install -y unzip
+      - name: Mostrar arquivos
+        run: |
+          pwd
+          ls -la
+
+      - name: Verificar se projeto.zip existe
+        run: |
+          if [ ! -f "projeto.zip" ]; then
+            echo "ERRO: projeto.zip não está na raiz do repositório"
+            exit 1
+          fi
+
+      - name: Testar zip
+        run: |
+          unzip -t projeto.zip
 
       - name: Extrair projeto.zip
         run: |
           rm -rf projeto
-          mkdir projeto
+          mkdir -p projeto
           unzip -o projeto.zip -d projeto
+          ls -la projeto
 
-      - name: Salvar arquivos extraídos no GitHub
+      - name: Salvar pasta extraída
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add projeto
-          git commit -m "Extrair projeto.zip" || echo "Nada para salvar"
+          git status
+          git commit -m "Extrair projeto.zip" || echo "Nada novo para salvar"
           git push
